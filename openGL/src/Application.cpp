@@ -112,15 +112,22 @@ int main(void)
 
     unsigned int buffer;
 
-    float positions[6] = {
+
+    float positions[] = {
         -0.5f, -0.5f,
-         0.0f, 0.5f,
-         0.5f, -0.5f
+         0.5f, -0.5f,
+         0.5f, 0.5f,
+         -0.5f, 0.5f,
+    };
+
+    unsigned int vertices[] = {
+        0, 1, 2,
+        2, 3, 0
     };
 
     glGenBuffers(1, &buffer);
     glBindBuffer(GL_ARRAY_BUFFER, buffer);
-    glBufferData(GL_ARRAY_BUFFER, 6 * sizeof(float), positions, GL_STATIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, 4 * 2 * sizeof(float), positions, GL_STATIC_DRAW);
 
     glEnableVertexAttribArray(0);
 
@@ -134,6 +141,11 @@ int main(void)
     */
     glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(float), 0);
 
+    unsigned int ibo;
+    glGenBuffers(1, &ibo);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, 3 * 2 * sizeof(unsigned int), vertices, GL_STATIC_DRAW);
+
     ShaderProgramSource shaderSource = ParseShader("res/shaders/shader.shader");
 
     unsigned int shader = CreateShader(shaderSource.VertexSource, shaderSource.FragmentSource);
@@ -146,7 +158,7 @@ int main(void)
         /* Render here */
         glClear(GL_COLOR_BUFFER_BIT);
 
-        glDrawArrays(GL_TRIANGLES, 0, 3);
+        glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, nullptr);
 
 
         /* Swap front and back buffers */
